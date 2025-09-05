@@ -30,7 +30,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: app1
   labels:
     purpose: ingress 
     project: roboshop 
@@ -44,3 +44,27 @@ spec:
     - protocol: TCP
       port: 80   #service port
       targetPort: 80 #container port
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wildcard-host
+  annotations:
+    annotations:
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]' 
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:583023875867:certificate/bf5e534c-6cb1-4573-9f09-821878fdc837
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      #alb.ingress.kubernetes.io/group.name: joindevops
+spec:
+  rules:
+  - host: "app1.daws84s.cloud"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app1
+            port:
+              number: 80  #app1 service port no
